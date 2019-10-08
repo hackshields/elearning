@@ -1,0 +1,36 @@
+<ion-card  class="group_container">
+    <div (click)="goToNextPage(group)">
+        <div class="group_block_grid">  
+            <div class="group_featured_image" [ngStyle]="{ 'background-image':'url('+group.image+')'}">
+                <lazy-img [inputSrc]="group.image" [imgStyle]="style"></lazy-img>
+                <span *ngIf="group.is_batch" class="group_is_batch">{{config.get_translation('batch')}}</span>
+            </div>
+            <div *ngIf="group" class="basic_group">
+                <h3><span [innerHtml]="group.name"></span></h3>
+                <div class="group_details">
+                    <div *ngIf="group.settings && group.settings.enable_batch_date">
+                        <ion-icon name="calendar"></ion-icon>
+                        <span>{{get_start_end_date(group.settings.start_batch_date,group.settings.end_batch_date)}}</span>
+                    </div>
+                    <div class="members" *ngIf="group.settings">
+                        <ion-icon name="people"></ion-icon>
+                        <span *ngIf="group.settings.total_member_count">{{group.settings.total_member_count}}</span>
+                        <span *ngIf="group.settings.batch_seats && group.settings.enable_seats ">/{{group.settings.batch_seats}}</span>
+                    </div>
+                    
+                    <div class="batch_price_container" *ngIf="group.price && group.price.price_html">
+                        <span class="batch_price" [innerHtml]="group.price.price_html"></span>
+                    </div>    
+                    <div class="buy_button" *ngIf="config.settings.wallet && !course_id">
+                        <div *ngIf="config.isLoggedIn && !group.is_member && group.price">
+                            <button *ngIf="group.is_batch " ion-button (click)="buy_batch(group)">{{config.get_translation('buy_batch')}}</button>
+                        </div>
+                        <div *ngIf="!config.isLoggedIn">
+                            <button *ngIf="group.is_batch && group.price" ion-button (click)="buy_batch(group)">{{config.get_translation('buy_batch')}}</button>
+                        </div>    
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</ion-card>

@@ -1,0 +1,134 @@
+<ion-header>
+    <ion-navbar  color="transparent" >
+        <ion-buttons start>
+            <button ion-button menuToggle>
+                <ion-icon name="md-menu"></ion-icon>
+            </button>
+        </ion-buttons>
+        <ion-title *ngIf="batchData">{{batchData.name}}</ion-title>
+            <ion-buttons end>
+                <button ion-button [navPush]="profilePage" [navParams]="userdata">
+                    <ion-icon name="md-contact" *ngIf="!config.isLoggedIn"></ion-icon>
+                    <img *ngIf="config.isLoggedIn" [src]="config.user?.avatar">
+                </button>
+            </ion-buttons>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <div >
+        <div *ngIf="batchData">
+            <div>    
+                <lazy-img [inputSrc]="batchData.image"></lazy-img>
+            </div>
+        </div>
+        <ion-slides  *ngIf="batchData && batchData.tabs" dir="{{config.settings.rtl ? 'rtl' : undefined }}" #GroupTabs id="grouptabs" spaceBetween="0" slidesPerView="3" (ionSlideDidChange)="onTabChanged()">
+            <ion-slide *ngFor="let tab of batchData.tabs; let i=index;" class="batch_tab_slide">
+                <button ion-button (click)="selectedTab(i,tab)" *ngIf="tab && tab.placeholder && tab.key">
+                   {{tab.placeholder}}
+                </button>
+            </ion-slide>
+        </ion-slides>
+
+        <div class="groupslides"*ngIf="batchData && batchData.tabs">  
+            <ion-refresher *ngIf="refresh_tab_ob[this.current_active_tab_key]" (ionRefresh)="doRefresh($event)">
+                <ion-refresher-content pullingText="{{config.get_translation('pull_to_refresh')}}"
+              pullingIcon="arrow-dropdown"
+              refreshingSpinner="circles"
+              refreshingText="{{config.get_translation('refreshing')}}"></ion-refresher-content>
+            </ion-refresher>
+            <ion-slides dir="{{config.settings.rtl ? 'rtl' : undefined }}" id="groupslides" #GroupSlides (ionSlideDidChange)="onSlideChanged()">
+                <ion-slide *ngFor="let tab of batchData.tabs; let i=index;" class="batch_tab_value">
+                    <div class="batchslide" *ngIf="tab && tab.placeholder && tab.key">
+                            <div *ngIf="tab.key=='description'" class="{{tab.key}}">
+                                
+                                <div class="batch_creds">
+                                    <div *ngIf="batchData.settings && batchData.settings.enable_batch_date">
+                                        <ion-icon name="calendar"></ion-icon>
+                                        <span>{{get_start_end_date(batchData.settings.start_batch_date,batchData.settings.end_batch_date)}}</span>
+                                    </div>
+                                    <div class="members" *ngIf="batchData.settings">
+                                        <ion-icon name="people"></ion-icon>
+                                        <span *ngIf="batchData.settings.total_member_count">{{batchData.settings.total_member_count}}</span>
+                                        <span *ngIf="batchData.settings.batch_seats && batchData.settings.enable_seats ">/{{batchData.settings.batch_seats}}</span>
+                                    </div>
+                                    <div *ngIf="batchData.settings && batchData.settings.enable_off_schedule" class="enable_off_schedule">
+                                        <span><b>{{config.get_translation('weekly_schedule_off')}}:</b></span>
+                                        <ul class="weekly_off_schedule" *ngIf="batchData.settings.weekly_off_schedule">
+                                            <li *ngFor="let sch of batchData.settings.weekly_off_schedule; let i=index">
+                                                {{config.batch.days[sch-1]}}
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="batch_courses" *ngIf="batchData.courses">
+                                    <ion-grid>
+                                      <ion-row>
+                                        <ion-col col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 *ngFor="let lcourse of batchData.courses">
+                                            <ion-card>
+                                                <courseblock [course]="lcourse.data"></courseblock>
+                                            </ion-card>
+                                        </ion-col>
+                                      </ion-row>
+                                    </ion-grid>
+                                </div>
+                                <div [innerHtml]="batchData.description"></div>
+                            </div>
+                            <div *ngIf="tab.key=='members'">
+                                <div *ngIf="batch_tab_value && batch_tab_value.members">
+                                    <div class="group_members" *ngIf="batch_tab_value.members.length">
+                                        <div  *ngFor="let member of  batch_tab_value.members; let j=index;" class="{{tab.key}}">
+                                            <lazy-img [inputSrc]="member.image"></lazy-img>
+                                            <div><p [innerHtml]="member.nickname"></p></div>
+                                        </div>
+                                    </div>
+                                    <div *ngIf="!batch_tab_value.members.length">
+                                       {{config.get_translation('no_member_found')}}
+                                    </div>
+                                </div>                              
+                            </div>
+                            <div *ngIf="tab.key=='activity'">
+                                <div *ngIf="batch_tab_value && batch_tab_value.activity" >
+                                    <ion-list id="activity" *ngIf="batch_tab_value.activity.length">
+                                        <ion-item *ngFor="let activity of  batch_tab_value.activity; let j=index;">
+                                            <span><friendlytime [time]="get_time_diff(activity.date)"></friendlytime></span>
+                                            <div [innerHtml]="activity.content"></div>
+                                        </ion-item>
+                                    </ion-list>
+                                    <div *ngIf="!batch_tab_value.activity.length">
+                                        {{config.get_translation('no_activity_found')}}
+                                    </div>   
+                                </div>
+
+                            </div>
+                            <div *ngIf="(tab.key=='news' && navData.is_batch)" >
+                                <div *ngIf="batch_tab_value && batch_tab_value.news" >
+                                    <div *ngIf="batch_tab_value.news.length">
+                                        <div  *ngFor="let news of  batch_tab_value.news; let k=index;" class="{{tab.key}}">
+                                            <div class="news_header">
+                                                <div class="news_author">
+                                                    <lazy-img [inputSrc]="news.user.image"></lazy-img>
+                                                    <span [innerHtml]="news.user.nickname"></span>
+                                                </div>
+                                                <div class="news_date">
+                                                   <friendlytime [time]="get_time_diff(news.date_recorded)"></friendlytime>
+                                                </div>
+                                            </div>
+                                            <div class="news_content">
+                                              <p [innerHtml]="news.content" class="content"></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div *ngIf="!batch_tab_value.news.length">
+                                         {{config.get_translation('no_news_found')}}
+                                    </div>
+                                </div>
+                            </div>  
+                    </div>
+                </ion-slide>
+            </ion-slides>
+            <ion-infinite-scroll *ngIf="load_more_ob[this.current_active_tab_key]" (ionInfinite)="loadMore($event)">
+               <ion-infinite-scroll-content></ion-infinite-scroll-content>
+            </ion-infinite-scroll>
+        </div>
+    </div>
+</ion-content>

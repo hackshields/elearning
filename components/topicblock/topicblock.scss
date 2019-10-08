@@ -1,0 +1,35 @@
+TopicBlock{
+	.topic_container{
+		padding: 10px;
+		background: map-get($colors, forum_container);
+		color : #222;
+		display:grid;
+		grid-template-columns:48px 1fr;
+		grid-gap:1rem;
+		align-items:center;
+		position:relative;
+		border-radius:5px;
+		box-shadow:0 2px 5px rgba(0,0,0,0.1);
+		.user{
+    		
+    		img{
+				width: 48px;
+	    		height: 48px;
+	    		border-radius: 50%;
+			}
+			span{
+				font-size: 1.2rem;
+				position: absolute;
+			    top: 5px;
+			    right: 10px;
+			    opacity: 0.2;
+			}
+		}
+		.value{
+			padding: 10px;
+		}
+	}
+	
+}	
+
+

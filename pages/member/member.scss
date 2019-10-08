@@ -1,0 +1,48 @@
+page-member{
+	.current_member_details{
+		background: #fff;
+		.avatar lazy-img img{
+			margin:auto;
+			width:50%;
+			height:50%;
+			border-radius:50%;
+			
+		}
+		.quizzes,.courses{
+			background: #909090;
+		    text-align: center;
+		    border-radius: 5px;
+		    margin:10px;
+		    .label{
+		    	font-size:2rem
+		    }
+		}
+		.certificates,.badges{
+			margin:10px;
+		    .label{
+		    	font-size:2rem
+		    }
+		    img{
+		    	max-height:64px;
+		    }
+		    ion-icon{
+		    	font-size: 64px;
+	   			opacity: 0.6;
+		    }
+		}
+		#user_details{
+		    margin: 0 10px 0 10px;
+		    ion-list-header{
+		    	opacity: 0.6;
+		    }
+		    ion-item{
+		    	font-size:1.4rem;
+		    }
+		}
+	}
+	
+
+   
+	
+
+}

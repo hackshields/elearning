@@ -1,0 +1,15 @@
+<ion-card class="forum_container" (click)="goToNextPage(forum)">
+	<div class="user">
+	   <img *ngIf="forum.user.image" [src]="forum.user.image" alt="">
+	   <span *ngIf="forum.post_date" ><friendlytime [time]="forum.post_date"></friendlytime></span>
+	</div>
+	<div class="value">
+		<div *ngIf="forum.post_title" class="post_title">
+			<span [innerHtml]="forum.post_title"></span>
+		</div>
+
+		<div *ngIf="forum.post_content" class="post_content">
+			<span [innerHtml]="forum.post_content"></span>
+		</div>
+	</div>
+</ion-card>

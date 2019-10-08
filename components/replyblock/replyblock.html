@@ -1,0 +1,28 @@
+<ion-card class="reply_container">
+	<div class="reply_header">
+		<div class="user">
+			<img *ngIf="reply.user.image" [src]="reply.user.image" alt="">
+			<strong class="nickname" *ngIf="reply.user.nickname"> 
+				<span [innerHtml]="reply.user.nickname"></span>
+				<span *ngIf="reply.post_date">
+					<friendlytime [time]="reply.post_date"></friendlytime>
+				</span>
+			</strong>
+		</div>
+		<div class="edit_delete">
+			<span *ngIf="config.isLoggedIn && (reply.post_author == config.user.id) && edit" class="edit"
+				(click)="editreply(reply)">
+				Edit
+			</span>
+			<span *ngIf="config.isLoggedIn && (reply.post_author == config.user.id) && delete" class="delete"
+				(click)="deletereply(reply)">
+				Delete
+			</span>
+		</div>
+	</div>
+	<div class="value">
+		<div *ngIf="reply.post_content" class="post_content">
+			<span [innerHtml]="reply.post_content"></span>
+		</div>
+	</div>
+</ion-card>

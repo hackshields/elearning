@@ -1,0 +1,99 @@
+<ion-header>
+    <ion-navbar color="transparent">
+        <ion-buttons start>
+            <button ion-button menuToggle>
+                <ion-icon name="md-menu"></ion-icon>
+            </button>
+        </ion-buttons>
+        <ion-title *ngIf="!navData.post_title">{{config.get_translation('reply_directory')}}</ion-title>
+        <ion-title *ngIf="navData.post_title">{{navData.post_title}}</ion-title>
+        <ion-buttons end>
+            <button ion-button [navPush]="profilePage" [navParams]="userdata">
+                <ion-icon name="md-contact" *ngIf="!config.isLoggedIn"></ion-icon>
+                <img *ngIf="config.isLoggedIn" [src]="config.user?.avatar">
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+    <div class="fixed-header">
+        <div *ngIf="topic" class="first_content">
+            <ReplyBlock [reply]="topic" [edit]="false" [delete]="false" [is_topic]="true"></ReplyBlock>
+        </div>
+    </div>
+</ion-header>
+
+<ion-content padding>
+    <div>
+        <ion-refresher (ionRefresh)="doRefresh($event)">
+            <ion-refresher-content pullingText="{{config.get_translation('pull_to_refresh')}}" pullingIcon="arrow-dropdown"
+                refreshingSpinner="circles" refreshingText="{{config.get_translation('refreshing')}}">
+            </ion-refresher-content>
+        </ion-refresher>
+    </div>    
+    <div>
+        <div *ngIf="forumService.all_replies && forumService.all_replies.length" class="all_replies">
+            <div *ngFor="let reply of forumService.all_replies">
+                <ReplyBlock [reply]="reply" (edit_form)="editreply($event)" [edit]="true" [delete]="true"></ReplyBlock>
+            </div>
+        </div>
+        <div *ngIf="!(forumService.all_replies && forumService.all_replies.length)" class="all_replies">
+            <div class="message" [innerHtml]="this.config.get_translation('reply_not_found')"></div>
+        </div>
+    </div>
+    <ion-infinite-scroll *ngIf="loadmore" (ionInfinite)="doInfinite($event)" position="top">
+        <ion-infinite-scroll-content></ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+</ion-content>
+
+<ion-footer>
+    <div class="create_form" *ngIf="new_reply_form_visible">
+        <form [formGroup]="new_reply" (ngSubmit)="logForm()">
+            <ion-item>
+                <ion-label floating>{{config.get_translation('reply_content')}}</ion-label>
+                <ion-textarea formControlName="post_content"></ion-textarea>
+            </ion-item>
+            <ion-item>
+                <button ion-button type="submit" block
+                    [disabled]="!new_reply.valid">{{config.get_translation('create')}}</button>
+            </ion-item>
+        </form>
+    </div>
+    <div class="create_form" *ngIf="editreply_form_visible">
+        <form [formGroup]="edit_reply" (ngSubmit)="edit_replyForm()">
+            <ion-item>
+                <ion-label floating>{{config.get_translation('edit_content')}}</ion-label>
+                <ion-textarea formControlName="post_content" [value]="current_editable_reply.post_content">
+                </ion-textarea>
+            </ion-item>
+            <ion-item>
+                <button ion-button type="submit" block
+                    [disabled]="!edit_reply.valid">{{config.get_translation('update')}}</button>
+            </ion-item>
+        </form>
+    </div>
+    <ion-row>
+        <ion-col>
+            <div class="filter_sort_select">
+                <ion-item>
+                    <ion-select placeholder="{{this.config.get_translation('sort_options')}}"
+                        (ionChange)="onSortOptions($event)" [selectOptions]="sortSelectOptions" [(ngModel)]="sortby"
+                        okText="{{config.get_translation('ok')}}" cancelText="{{config.get_translation('cancel')}}">
+                        <ion-option value="ASC">{{this.config.get_translation('oldest_post_first')}}</ion-option>
+                        <ion-option value="DESC">{{this.config.get_translation('latest_post_first')}}</ion-option>
+                    </ion-select>
+                </ion-item>
+            </div>
+        </ion-col>
+        <ion-col *ngIf="config.isLoggedIn">
+            <div>
+                <button ion-button full icon-left
+                    (click)="toggle_form()">{{config.get_translation('create_reply')}}</button>
+            </div>
+        </ion-col>
+        <ion-col *ngIf="config.isLoggedIn && editreply_form_visible">
+            <div>
+                <button ion-button full icon-left
+                    (click)="toggle_edit_form()">{{config.get_translation('edit_reply')}}</button>
+            </div>
+        </ion-col>
+    </ion-row>
+</ion-footer>

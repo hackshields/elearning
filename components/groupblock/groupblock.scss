@@ -1,0 +1,52 @@
+GroupBlock{
+	.group_container{
+		background: map-get($colors, group_container);
+		border-radius:10px;
+		.group_block_grid{
+			background: map-get($colors, group_background);
+			display: grid;
+		    grid-template-columns: 1fr 1fr;
+		    lazy-img  img{
+		    }
+		}
+
+		.group_featured_image{
+		    overflow: hidden;
+		    background-size: cover;
+    		width: 100%;
+		    img{
+			    width: 100%;
+			    opacity:0;
+		    }
+		}
+
+		h3{
+			font-size:2rem;
+			margin-bottom:1rem;
+		}
+		.basic_group{
+		    padding: 15px;
+		    display: grid;
+		    grid-template-columns: 1fr;
+		    align-items: center;
+			button{
+				width:100%;
+			}
+			.batch_price{
+				color: map-get($colors, batch_price);
+			}	
+		}
+		.group_description{
+			.weekly_off_schedule{
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+			}
+			.group_description_content{
+				width:90%;
+				margin:auto;
+				margin-top:10px;
+			}	
+		}
+	}
+	
+}	

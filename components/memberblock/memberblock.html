@@ -1,0 +1,11 @@
+<div (click)="goToNextPage(member)">
+	<div class="mymember" *ngIf="member.image && member.display_name">
+		<img [src]="member.image" />
+		<div>
+			<div class="mymember_content">
+				<p [innerHtml]="member.display_name"></p>
+				<a *ngIf="member.status" href="#" class="status"></a>
+			</div>
+		</div>
+	</div>
+</div>

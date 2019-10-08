@@ -1,0 +1,70 @@
+<ion-header>
+    <ion-navbar color="transparent">
+        <ion-buttons start>
+            <button ion-button menuToggle>
+                <ion-icon name="md-menu"></ion-icon>
+            </button>
+        </ion-buttons>
+        <ion-title *ngIf="current_member_details && current_member_details.user">{{current_member_details.user.user_nicename}}</ion-title>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <ion-refresher (ionRefresh)="doRefresh($event)">
+        <ion-refresher-content pullingText="{{config.get_translation('pull_to_refresh')}}"
+          pullingIcon="arrow-dropdown"
+          refreshingSpinner="circles"
+          refreshingText="{{config.get_translation('refreshing')}}"></ion-refresher-content>
+    </ion-refresher>
+    <div *ngIf="current_member_details" class="current_member_details">
+        <div *ngIf="current_member_details.image" class="avatar">
+            <lazy-img [inputSrc]="current_member_details.image"></lazy-img>
+        </div>
+        <div *ngIf="current_member_details.module && current_member_details.module.length">
+            <div *ngFor="let module of current_member_details.module">
+                <div *ngIf="module.key=='courses'" class="courses">
+                	<p class="label" [innerHtml]= "module.label"></p>
+                	<p class="value" [innerHtml]= "module.value"></p>
+                </div>
+                <div *ngIf="module.key=='quizzes'" class="quizzes">
+                    <p class="label" [innerHtml]= "module.label"></p>
+                	<p class="value" [innerHtml]= "module.value"></p>
+                </div>
+                <div *ngIf="module.key=='certificates'" class="certificates">
+                     <div>Certificates</div>
+                	<ion-slides dir="{{config.settings.rtl ? 'rtl' : undefined }}" *ngIf="module.value.length"  slidesPerView="3" spaceBetween="10">
+           				<ion-slide *ngFor="let obj of module.value" class="certificates_image">
+           				 	<img [src]="obj.value" *ngIf="checkImage(obj.value)" (click)="triggerImage(obj.value)">
+						    <ion-icon name="md-easel"  *ngIf="!checkImage(obj.value)" (click)="triggerCertificateInBrowser(obj.value)"></ion-icon>
+           				</ion-slide>
+           			</ion-slides>
+                </div>
+                <div *ngIf="module.key=='badges'" class="badges">
+                    <div>Badges</div>
+                    <ion-slides dir="{{config.settings.rtl ? 'rtl' : undefined }}" *ngIf="module.value.length"  slidesPerView="3" spaceBetween="10">
+                        <ion-slide *ngFor="let obj of module.value" class="badges_image">
+                            <img [src]="obj.value" *ngIf="checkImage(obj.value)" (click)="triggerImage(obj.value)">
+                            <ion-icon name="md-easel"  *ngIf="!checkImage(obj.value)" (click)="triggerCertificateInBrowser(obj.value)"></ion-icon>
+                        </ion-slide>
+                    </ion-slides>
+                </div>
+            </div>
+        </div>
+        <div id="user_details" >
+        	<ion-list *ngIf="current_member_details.user">
+        		<div *ngFor="let group of current_member_details.user">
+					<ion-list-header>
+					    {{group.name}}
+				  	</ion-list-header>
+				    <ion-item *ngFor="let field of group.fields">
+				        <ion-label>{{field.name}}</ion-label>
+			  			<div [innerHtml]="field.value" item-content 
+			  			></div>	
+				    </ion-item>
+		  		</div>
+			</ion-list>
+        </div>
+
+    </div>
+
+
+</ion-content>

@@ -1,0 +1,77 @@
+<ion-header>
+    <ion-navbar color="transparent">
+        <ion-buttons start>
+            <button ion-button menuToggle>
+                <ion-icon name="md-menu"></ion-icon>
+            </button>
+        </ion-buttons>
+        <ion-title *ngIf="!navData.post_title">{{config.get_translation('topic_directory')}}</ion-title>
+        <ion-title *ngIf="navData.post_title">{{navData.post_title}}</ion-title>
+        <ion-buttons end>
+            <button ion-button [navPush]="profilePage" [navParams]="userdata">
+                <ion-icon name="md-contact" *ngIf="!config.isLoggedIn"></ion-icon>
+                <img *ngIf="config.isLoggedIn" [src]="config.user?.avatar">
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+<ion-content padding>
+    <ion-refresher (ionRefresh)="doRefresh($event)">
+        <ion-refresher-content pullingText="{{config.get_translation('pull_to_refresh')}}" pullingIcon="arrow-dropdown"
+            refreshingSpinner="circles" refreshingText="{{config.get_translation('refreshing')}}">
+        </ion-refresher-content>
+    </ion-refresher>
+    <ion-row>
+        <ion-col>
+            <div class="filter_sort_select">
+                <ion-item>
+                    <ion-select placeholder="{{this.config.get_translation('sort_options')}}"
+                        (ionChange)="onSortOptions($event)" [selectOptions]="sortSelectOptions" [(ngModel)]="sortby"
+                        okText="{{config.get_translation('ok')}}" cancelText="{{config.get_translation('cancel')}}">
+                        <ion-option value="ASC">{{this.config.get_translation('oldest_post_first')}}</ion-option>
+                        <ion-option value="DESC">{{this.config.get_translation('latest_post_first')}}</ion-option>
+                    </ion-select>
+                </ion-item>
+            </div>
+        </ion-col>
+        <ion-col *ngIf="config.isLoggedIn">
+            <button ion-button full icon-left
+                (click)="toggle_form()">{{config.get_translation('create_topic')}}</button>
+        </ion-col>
+    </ion-row>
+    <ion-row class="search_groups">
+        <ion-searchbar [(ngModel)]="searchTerm" debounced-input
+            placeholder="{{config.get_translation('directory_search_placeholder')}}" (ionInput)="onSearchInput()">
+        </ion-searchbar>
+    </ion-row>
+
+    <div class="create_form" *ngIf="form_visible">
+        <form [formGroup]="new_topic" (ngSubmit)="logForm()">
+            <ion-item>
+                <ion-label floating>{{config.get_translation('topic_title')}}</ion-label>
+                <ion-textarea formControlName="post_title"></ion-textarea>
+            </ion-item>
+            <ion-item>
+                <ion-label floating>{{config.get_translation('topic_content')}}</ion-label>
+                <ion-textarea formControlName="post_content"></ion-textarea>
+            </ion-item>
+            <ion-item>
+                <button ion-button type="submit" block
+                    [disabled]="!new_topic.valid">{{config.get_translation('send_message')}}</button>
+            </ion-item>
+        </form>
+    </div>
+    <div>
+        <div *ngIf="forumService.all_topics && forumService.all_topics.length" class="all_topics">
+            <div *ngFor="let topic of forumService.all_topics">
+                <TopicBlock [topic]="topic"></TopicBlock>
+            </div>
+        </div>
+        <div *ngIf="!(forumService.all_topics && forumService.all_topics.length)" class="all_topics">
+            <div class="message" [innerHtml]="this.config.get_translation('topic_not_found')"></div>
+        </div>
+    </div>
+    <ion-infinite-scroll *ngIf="loadmore" (ionInfinite)="doInfinite($event)">
+        <ion-infinite-scroll-content></ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+</ion-content>

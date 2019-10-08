@@ -1,0 +1,15 @@
+<ion-card  class="topic_container"  (click)="goToNextPage(topic)">
+	<div class="user">
+	   <img *ngIf="topic.user.image" [src]="topic.user.image" alt="">
+	   <span *ngIf="topic.post_date" ><friendlytime [time]="topic.post_date"></friendlytime></span>
+	</div>
+
+	<div class="value">
+		<div *ngIf="topic.post_title" class="post_title">
+			<span [innerHtml]="topic.post_title"></span>
+		</div>
+	</div>
+</ion-card>
+
+
+
